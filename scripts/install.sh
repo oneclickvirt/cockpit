@@ -89,3 +89,5 @@ esac
 if [ -f "/etc/cockpit/disallowed-users" ]; then
     sed -i '/^[[:space:]]*root[[:space:]]*$/s/^/# /' /etc/cockpit/disallowed-users
 fi
+
+// TODO https://chaos-blog.github.io/posts/19/ 对接配置
