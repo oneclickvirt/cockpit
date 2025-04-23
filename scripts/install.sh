@@ -30,13 +30,13 @@ case "$ID" in
         apt update
         apt install -t ${VERSION_CODENAME}-backports cockpit -y
         [[ $INSTALL_VM -eq 1 ]] && apt install -t ${VERSION_CODENAME}-backports cockpit-machines -y
-        [[ $INSTALL_CONTAINER -eq 1 ]] && apt install -t ${VERSION_CODENAME}-backports cockpit-docker -y
+        [[ $INSTALL_CONTAINER -eq 1 ]] && apt install -t ${VERSION_CODENAME}-backports cockpit-podman -y
         systemctl enable --now cockpit.socket
         ;;
     fedora)
         dnf install cockpit -y
         [[ $INSTALL_VM -eq 1 ]] && dnf install cockpit-machines -y
-        [[ $INSTALL_CONTAINER -eq 1 ]] && dnf install cockpit-docker -y
+        [[ $INSTALL_CONTAINER -eq 1 ]] && dnf install cockpit-podman -y
         systemctl enable --now cockpit.socket
         firewall-cmd --add-service=cockpit || true
         firewall-cmd --add-service=cockpit --permanent || true
@@ -44,7 +44,7 @@ case "$ID" in
     rhel|centos)
         yum install cockpit -y
         [[ $INSTALL_VM -eq 1 ]] && yum install cockpit-machines -y
-        [[ $INSTALL_CONTAINER -eq 1 ]] && yum install cockpit-docker -y
+        [[ $INSTALL_CONTAINER -eq 1 ]] && yum install cockpit-podman -y
         systemctl enable --now cockpit.socket
         firewall-cmd --add-service=cockpit || true
         firewall-cmd --add-service=cockpit --permanent || true
@@ -53,7 +53,7 @@ case "$ID" in
     arch)
         pacman -Sy --noconfirm cockpit
         [[ $INSTALL_VM -eq 1 ]] && pacman -S --noconfirm cockpit-machines
-        [[ $INSTALL_CONTAINER -eq 1 ]] && pacman -S --noconfirm cockpit-docker
+        [[ $INSTALL_CONTAINER -eq 1 ]] && pacman -S --noconfirm cockpit-podman
         systemctl enable --now cockpit.socket
         ;;
     clear-linux-os)
@@ -65,7 +65,7 @@ case "$ID" in
     opensuse*|suse)
         zypper --non-interactive in cockpit
         [[ $INSTALL_VM -eq 1 ]] && zypper --non-interactive in cockpit-machines
-        [[ $INSTALL_CONTAINER -eq 1 ]] && zypper --non-interactive in cockpit-docker
+        [[ $INSTALL_CONTAINER -eq 1 ]] && zypper --non-interactive in cockpit-podman
         systemctl enable --now cockpit.socket
         firewall-cmd --permanent --zone=public --add-service=cockpit || true
         firewall-cmd --reload || true
@@ -73,7 +73,7 @@ case "$ID" in
     *)
         if grep -qi "coreos" /etc/os-release; then
             rpm-ostree install cockpit-system cockpit-ostree
-            [[ $INSTALL_CONTAINER -eq 1 ]] && rpm-ostree install cockpit-docker
+            [[ $INSTALL_CONTAINER -eq 1 ]] && rpm-ostree install cockpit-podman
             echo 'PasswordAuthentication yes' > /etc/ssh/sshd_config.d/02-enable-passwords.conf
             systemctl try-restart sshd
             podman container runlabel --name cockpit-ws RUN quay.io/cockpit/ws
