@@ -358,6 +358,21 @@ enable_cockpit_service() {
     fi
 }
 
+fix_qemu_conf() {
+    local conf="/etc/libvirt/qemu.conf"
+    if [ ! -f "$conf" ]; then
+        return 1
+    fi
+    if ! grep -qE '^ *user *= *"root"' "$conf"; then
+        echo 'user = "root"' >> "$conf"
+    fi
+    if ! grep -qE '^ *group *= *"root"' "$conf"; then
+        echo 'group = "root"' >> "$conf"
+    fi
+    systemctl restart libvirtd
+}
+
+
 show_completion_info() {
     check_ipv4
     _green "Cockpit安装完成！"
@@ -381,6 +396,7 @@ main() {
     install_cockpit_base
     install_cockpit_machines
     install_cockpit_containers
+    fix_qemu_conf
     configure_firewall
     allow_root_access
     enable_cockpit_service
