@@ -175,7 +175,6 @@ install_packages() {
             done
             ;;
         CentOS|Fedora)
-            yum makecache fast
             for package in "${packages[@]}"; do
                 if yum list available "$package" >/dev/null 2>&1; then
                     _green "安装 $package..."
