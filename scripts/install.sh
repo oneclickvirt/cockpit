@@ -153,21 +153,64 @@ update_system() {
     fi
 }
 
+install_packages() {
+    local packages=("$@")
+    case "$SYSTEM" in
+        Debian|Ubuntu)
+            apt-get update
+            for package in "${packages[@]}"; do
+                if apt-cache show "$package" >/dev/null 2>&1; then
+                    _green "安装 $package..."
+                    $PACKAGE_INSTALL_CMD "$package"
+                else
+                    _yellow "包 $package 不存在，跳过安装"
+                fi
+            done
+            ;;
+        CentOS|Fedora)
+            yum makecache fast
+            for package in "${packages[@]}"; do
+                if yum list available "$package" >/dev/null 2>&1; then
+                    _green "安装 $package..."
+                    $PACKAGE_INSTALL_CMD "$package"
+                else
+                    _yellow "包 $package 不存在，跳过安装"
+                fi
+            done
+            ;;
+        Arch)
+            pacman -Sy
+            for package in "${packages[@]}"; do
+                if pacman -Si "$package" >/dev/null 2>&1; then
+                    _green "安装 $package..."
+                    $PACKAGE_INSTALL_CMD "$package"
+                else
+                    _yellow "包 $package 不存在，跳过安装"
+                fi
+            done
+            ;;
+        *)
+            _yellow "未知系统，尝试直接安装所有包..."
+            $PACKAGE_INSTALL_CMD "${packages[@]}" || _yellow "安装遇到问题，请检查手动处理"
+            ;;
+    esac
+}
+
 install_vm_packages() {
     if [ $INSTALL_VM -eq 1 ]; then
         _blue "安装QEMU/KVM虚拟化软件包..."
         case "$SYSTEM" in
             Debian|Ubuntu)
-                $PACKAGE_INSTALL_CMD qemu qemu-kvm libvirt-daemon libvirt-clients bridge-utils
+                install_packages qemu-system qemu-utils qemu-kvm libvirt-daemon libvirt-clients bridge-utils
                 ;;
             CentOS)
-                $PACKAGE_INSTALL_CMD qemu-kvm qemu-img libvirt virt-install libvirt-client bridge-utils
+                install_packages qemu-kvm qemu-img libvirt virt-install libvirt-client bridge-utils
                 ;;
             Fedora)
-                $PACKAGE_INSTALL_CMD qemu-kvm qemu-img libvirt virt-install libvirt-client bridge-utils
+                install_packages qemu-kvm qemu-img libvirt virt-install libvirt-client bridge-utils
                 ;;
             Arch)
-                $PACKAGE_INSTALL_CMD qemu libvirt bridge-utils
+                install_packages qemu libvirt bridge-utils
                 ;;
             *)
                 _red "无法为当前发行版安装虚拟化包，请手动安装"
@@ -192,17 +235,17 @@ install_cockpit_base() {
                 apt-get update
                 apt-get install -t ${VERSION_CODENAME}-backports cockpit -y
             else
-                $PACKAGE_INSTALL_CMD cockpit
+                install_packages cockpit
             fi
             ;;
         CentOS)
-            $PACKAGE_INSTALL_CMD cockpit
+            install_packages cockpit
             ;;
         Fedora)
-            $PACKAGE_INSTALL_CMD cockpit
+            install_packages cockpit
             ;;
         Arch)
-            $PACKAGE_INSTALL_CMD cockpit
+            install_packages cockpit
             ;;
         *)
             if grep -qi "coreos" /etc/os-release; then
@@ -230,17 +273,17 @@ install_cockpit_machines() {
                 if [ -n "$VERSION_CODENAME" ]; then
                     apt-get install -t ${VERSION_CODENAME}-backports cockpit-machines -y
                 else
-                    $PACKAGE_INSTALL_CMD cockpit-machines
+                    install_packages cockpit-machines
                 fi
                 ;;
             CentOS)
-                $PACKAGE_INSTALL_CMD cockpit-machines
+                install_packages cockpit-machines
                 ;;
             Fedora)
-                $PACKAGE_INSTALL_CMD cockpit-machines
+                install_packages cockpit-machines
                 ;;
             Arch)
-                $PACKAGE_INSTALL_CMD cockpit-machines
+                install_packages cockpit-machines
                 ;;
             *)
                 if ! grep -qi "coreos" /etc/os-release; then
@@ -260,17 +303,17 @@ install_cockpit_containers() {
                 if [ -n "$VERSION_CODENAME" ]; then
                     apt-get install -t ${VERSION_CODENAME}-backports cockpit-podman -y
                 else
-                    $PACKAGE_INSTALL_CMD cockpit-podman
+                    install_packages cockpit-podman
                 fi
                 ;;
             CentOS)
-                $PACKAGE_INSTALL_CMD cockpit-podman
+                install_packages cockpit-podman
                 ;;
             Fedora)
-                $PACKAGE_INSTALL_CMD cockpit-podman
+                install_packages cockpit-podman
                 ;;
             Arch)
-                $PACKAGE_INSTALL_CMD cockpit-podman
+                install_packages cockpit-podman
                 ;;
             *)
                 if grep -qi "coreos" /etc/os-release; then
