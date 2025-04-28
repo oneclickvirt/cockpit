@@ -236,7 +236,7 @@ install_vm_packages() {
 install_cockpit_base() {
     _blue "安装Cockpit基本组件..."
     case "$SYSTEM" in
-        Debian|Ubuntu)
+        Debian)
             if [ -n "$VERSION_CODENAME" ]; then
                 echo "deb http://deb.debian.org/debian ${VERSION_CODENAME}-backports main" > /etc/apt/sources.list.d/backports.list
                 apt-get update
@@ -245,13 +245,15 @@ install_cockpit_base() {
                 install_packages cockpit
             fi
             ;;
-        CentOS)
-            install_packages cockpit
+        Ubuntu)
+            if [ -n "$VERSION_CODENAME" ]; then
+                apt-get update
+                apt-get install cockpit -y
+            else
+                install_packages cockpit
+            fi
             ;;
-        Fedora)
-            install_packages cockpit
-            ;;
-        Arch)
+        CentOS|Fedora|Arch)
             install_packages cockpit
             ;;
         *)
