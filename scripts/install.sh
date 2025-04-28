@@ -153,6 +153,13 @@ update_system() {
     fi
 }
 
+statistics_of_run_times() {
+    COUNT=$(curl -4 -ksm1 "https://hits.spiritlhl.net/cockpit?action=hit&title=Hits&title_bg=%23555555&count_bg=%2324dde1&edge_flat=false" 2>/dev/null ||
+        curl -6 -ksm1 "https://hits.spiritlhl.net/cockpit?action=hit&title=Hits&title_bg=%23555555&count_bg=%2324dde1&edge_flat=false" 2>/dev/null)
+    TODAY=$(echo "$COUNT" | grep -oP '"daily":\s*[0-9]+' | sed 's/"daily":\s*\([0-9]*\)/\1/')
+    TOTAL=$(echo "$COUNT" | grep -oP '"total":\s*[0-9]+' | sed 's/"total":\s*\([0-9]*\)/\1/')
+}
+
 install_packages() {
     local packages=("$@")
     case "$SYSTEM" in
@@ -390,6 +397,9 @@ main() {
     parse_arguments "$@"
     detect_os
     update_system
+    statistics_of_run_times
+    _green "Script run count today: ${TODAY}, total run count: ${TOTAL}"
+    _green "脚本当天运行次数:${TODAY}，累计运行次数:${TOTAL}"
     if [ $INSTALL_VM -eq 1 ]; then
         install_vm_packages
     fi
