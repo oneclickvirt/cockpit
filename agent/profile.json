@@ -1,0 +1,21 @@
+{
+  "repository": "oneclickvirt/cockpit",
+  "branch": "main",
+  "skill_name": "oneclickvirt-cockpit",
+  "purpose": "Install or remove the Cockpit setup maintained in this repository.",
+  "notes": [
+    "Review scripts/install.sh or scripts/uninstall.sh first. Respect the target distribution and preserve existing Cockpit configuration."
+  ],
+  "guide": "https://www.spiritlhl.net/guide/agent_integrations.html",
+  "releases": false,
+  "mcp": false,
+  "source_files": [
+    "scripts/install.sh",
+    "scripts/lib/runtime.sh",
+    "scripts/uninstall.sh"
+  ],
+  "purpose_zh": "按仓库现有脚本安装或移除 Cockpit。",
+  "notes_zh": [
+    "先阅读 scripts/install.sh 或 scripts/uninstall.sh，核对发行版并保留现有配置。"
+  ]
+}

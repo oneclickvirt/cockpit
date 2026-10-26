@@ -1,0 +1,10 @@
+{
+  "repository": "oneclickvirt/cockpit",
+  "skill_name": "oneclickvirt-cockpit",
+  "mcp": false,
+  "files": {
+    "agent/profile.json": "1d5c8de92bafbc25398eacd2533725c320084db304597462f613714167cd562c",
+    "skills/oneclickvirt-cockpit/SKILL.md": "e5d99835496b480cd53edf07cece14b2dc278a474b4c587502938a413379df19",
+    "skills/oneclickvirt-cockpit/SKILL_ZH.md": "ccf36b841b2d5c96e66bf0cafa6eff77ccf79afd3ebaa456f3b7d47bca051674"
+  }
+}
